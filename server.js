@@ -1,8 +1,6 @@
 import express from "express";
 import mongoose from "mongoose";
 import Item from "./itemModel.js";
-import multer from 'multer';
-const upload = multer({dest: 'uploads/'})
 import cors from "cors";
 
 
@@ -34,7 +32,7 @@ app.use(express.json());
 
 //api endpoints
 
-app.post("/api/addItem",upload.single('image'), (req, res, next) => {
+app.post("/api/addItem", (req, res, next) => {
   const item = new Item({
     _id: mongoose.Types.ObjectId(),
     name: req.body.name,
