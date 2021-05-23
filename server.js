@@ -32,7 +32,12 @@ app.use(express.json());
 
 //api endpoints
 
-app.post("/api/addItem", (req, res, next) => {
+app.get("/api/get/addItem", async (req, res) => {
+	const items = await Item.find();
+  res.send(items);
+
+})
+  app.post("/api/addItem", (req, res, next) => {
   const item = new Item({
     _id: mongoose.Types.ObjectId(),
     name: req.body.name,
