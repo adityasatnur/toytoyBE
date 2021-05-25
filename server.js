@@ -34,7 +34,7 @@ app.use(express.json());
 
 app.get("/api/get/addItem", async (req, res) => {
 	const items = await Item.find();
-  res.send(items);
+  res.send(items.data);
 
 })
   app.post("/api/addItem", (req, res, next) => {
@@ -59,7 +59,7 @@ app.get("/api/get/addItem", async (req, res) => {
       res.status(400).send("adding new todo failed");
     });
 });
-app.get("/", (req, res) => res.status(200).send("yo"));
+app.get("/api", (req, res) => res.status(200).send("yo"));
 
 //listen
 app.listen(port, (req, res) => console.log(`listening on localhost: ${port}`));
