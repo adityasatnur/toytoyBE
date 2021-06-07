@@ -34,7 +34,7 @@ app.use(express.json());
 
 app.get("/api/get/addItem", async (req, res) => {
 	const items = await Item.find();
-  res.send(items.data);
+  res.send(items);
 
 })
   app.post("/api/addItem", (req, res, next) => {
@@ -42,12 +42,14 @@ app.get("/api/get/addItem", async (req, res) => {
     _id: mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
+    itemDescription:req.body.description,
      image: req.body.image,
     category: req.body.category,
     inventory: req.body.inventory,
     type: req.body.type,
     purchasable: req.body.purchasable,
     ageGroup: req.body.ageGroup,
+    toySet: req.body.toySet
   });
   item
     .save()
