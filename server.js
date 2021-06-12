@@ -54,7 +54,6 @@ app.get("/api/get/addItem", async (req, res) => {
   item
     .save()
     .then(() => {
-      console.log(res)
       res.status(200).json({ item: "item added successfully" });
     })
     .catch((err) => {
