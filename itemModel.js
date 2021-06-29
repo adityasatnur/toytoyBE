@@ -10,6 +10,7 @@ const toysSchema = mongoose.Schema({
   inventory: Number,
   type: String,
   purchasable: Boolean,
+  popular: Boolean,
   ageGroup: Array,
   toySet: String,
 });
