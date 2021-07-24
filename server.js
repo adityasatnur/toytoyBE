@@ -1,8 +1,11 @@
-import express from "express";
+import express, { Router } from "express";
 import mongoose from "mongoose";
 import Item from "./itemModel.js";
 import User from "./userModel.js";
 import cors from "cors";
+import qs from "querystring";
+import https from 'https'
+import paymentRoute from './paymentRoute.js';
 
 const connection_url =
   "mongodb+srv://Aditya:toytoy@cluster0.ra9uy.mongodb.net/toytoy";
@@ -128,6 +131,10 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
     }
   });
 });
+app.use('/api',paymentRoute);
+
+
+
 
 app.get("/api", (req, res) => res.status(200).send("yo"));
 
