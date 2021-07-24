@@ -5,7 +5,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "mocha",
     "start": "node server.js"
   },
   "author": "",
