@@ -60,9 +60,11 @@ router.post('/callback/:orderId', (req, res) => {
                         let result = JSON.parse(response)
                         if (result.STATUS === 'TXN_SUCCESS') {
                             //store in db
+                            res.redirect(`${'https://toytoy.co.in'}/status/${orderId}`)
+                        }else{
+                            res.redirect(`${'https://toytoy.co.in'}/status/${orderId}`)
                         }
 
-                        res.redirect(`${'https://toytoy.co.in'}/status/${orderId}`)
 
 
                     });
@@ -90,11 +92,11 @@ router.post('/payment', (req, res) => {
 paytmParams.body = {
     "requestType"   : "Payment",
     "mid"           : config.mid,
-    "websiteName"   : "WEBSTAGING",
+    "websiteName"   : config.website,
     "orderId"       : orderID,
-    "callbackUrl"   : `${config.PORT}/api/callback/${orderID}`,
+    "callbackUrl"   : `${'https://toytoy.co.in'}/status/${orderID}`,
     "txnAmount"     : {
-        "value"     : "1.00",
+        "value"     : totalAmount,
         "currency"  : "INR",
     },
     "userInfo"      : {
@@ -133,10 +135,10 @@ paytmParams.body = {
         var options = {
 
             /* for Staging */
-            hostname: 'securegw-stage.paytm.in',
+            //hostname: 'securegw-stage.paytm.in',
     
             /* for Production */
-            // hostname: 'securegw.paytm.in',
+             hostname: 'securegw.paytm.in',
     
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${config.mid}&orderId=${orderID}`,
