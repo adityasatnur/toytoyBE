@@ -14,7 +14,7 @@
     website: "DEFAULT",
     channel: "WEB",
     industryType:"Retail",
-    PORT:"http://localhost:8080",
-     //PORT: "https://toytoylib.azurewebsites.net"
+    //PORT:"http://localhost:8080",
+     PORT: "https://toytoylib.azurewebsites.net"
   };
 export default config;
