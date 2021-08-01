@@ -5,10 +5,21 @@ import { v4 as uuidv4 } from 'uuid';
 import https from 'https';
 import PaytmChecksum from './Paytm/checksum.mjs';
 import config from './Paytm/config.js';
+import User from "./userModel.js";
 
-router.post('/callback/:orderId', (req, res) => {
-    var orderId = req.params.orderId;
-
+router.post('/callback', (req, res) => {
+    const orderId = req.query.orderId;
+    const userId = req.query.userId;
+    let buyoutItems = req.query.buyoutItemsId;
+    let rentedItems = req.query.rentedItemsId;
+    let plans = undefined;
+    if(req.query.plansId === 'undefined') {
+        plans = undefined
+    }else{
+        plans = req.query.plansId;
+    }
+    let buyoutItemsList = buyoutItems.split(',');
+    let rentedItemsList = rentedItems.split(',');
     const form = new formidable.IncomingForm();
 
     form.parse(req, (err, fields, file) => {
@@ -36,10 +47,10 @@ router.post('/callback/:orderId', (req, res) => {
                 var options = {
 
                     /* for Staging */
-                    hostname: 'securegw-stage.paytm.in',
+                    //hostname: 'securegw-stage.paytm.in',
 
                     /* for Production */
-                    // hostname: 'securegw.paytm.in',
+                     hostname: 'securegw.paytm.in',
 
                     port: 443,
                     path: '/order/status',
@@ -60,6 +71,78 @@ router.post('/callback/:orderId', (req, res) => {
                         let result = JSON.parse(response)
                         if (result.STATUS === 'TXN_SUCCESS') {
                             //store in db
+                            
+                            const filter = { _id: userId };
+                            if(plans){
+                                let update = null;
+                                let days = 0;
+                                switch(plans){
+                                    case "Plan1":
+                                    days = 30;
+                                    break;
+                                    case "Plan2":
+                                    days = 90;
+                                    break;
+                                    case "Plan3":
+                                    days = 180;
+                                    break;
+                                }
+                                Date.prototype.addDays = function(days) {
+                                    var date = new Date(this.valueOf());
+                                    date.setDate(date.getDate() + days);
+                                    return date;
+                                }
+                                
+                                var date = new Date();
+                                 update = {
+                                    userSubscriptionStartDate: date,
+                                    userSubscriptionEndDate: date.addDays(days),
+                                    userPlanType: plans
+                                };
+                                User.findOneAndUpdate(filter, update, null, function (err, docs) {
+                                  if (err) {
+                                    console.log(err)
+                                  } else {
+                                      console.log("Profile updated successfully")
+                                  }
+                                });
+                            }
+                            let updateList = null;
+
+                                if(buyoutItemsList && rentedItemsList){
+                                    updateList = {
+                                        userPurchasedItems: {
+                                            undeliveredPurchasedItems:buyoutItemsList,
+                                        },
+                                        userRentedItems: {
+                                            undeliveredRentedItems:rentedItemsList,
+                                        }
+                                    };
+                                }else if(buyoutItemsList){
+                                    updateList = {
+                                        userPurchasedItems: {
+                                            undeliveredPurchasedItems:buyoutItemsList,
+                                        }
+                                    };
+                                }else if(rentedItemsList){
+                                    updateList = {
+                                        userRentedItems: {
+                                            undeliveredRentedItems:rentedItemsList,
+                                        }
+                                    };
+                                }else{
+                                    updateList = undefined;
+                                }
+                                
+                                User.findOneAndUpdate(filter, updateList, null, function (err, docs) {
+                                  if (err) {
+                                    console.log(err)
+                                  } else {
+                                      console.log("Items Added")
+                                  }
+                                });
+                          
+
                             res.redirect(`${'https://toytoy.co.in'}/status/${orderId}`)
                         }else{
                             res.redirect(`${'https://toytoy.co.in'}/status/${orderId}`)
@@ -84,7 +167,7 @@ router.post('/payment', (req, res) => {
 
     let orderID = uuidv4();
 
-    const { amount, email, phone } = req.body;
+    const { amount, userId, buyoutItems,rentedItems, plans } = req.body;
 
     /* import checksum generation utility */
     const totalAmount = JSON.stringify(amount);
@@ -94,7 +177,8 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-    "callbackUrl"   : `${'https://toytoy.co.in'}/status/${orderID}`,
+     //"callbackUrl"   : `${'http://localhost:9000'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
+     "callbackUrl"   : `${'https://toytoy.co.in'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
@@ -104,24 +188,6 @@ paytmParams.body = {
     },
 };
 
-    // var params = {};
-
-    /* initialize an array */
-    // params['MID'] = config.mid,
-    //     params['WEBSITE'] = config.website,
-    //     params['CHANNEL_ID'] = config.channel,
-    //     params['INDUSTRY_TYPE_ID'] = config.industryType,
-    //     params['ORDERID'] = "OREDRID_12",
-    //     params['CUST_ID'] = "12",
-    //     params['TXN_AMOUNT'] = totalAmount,
-    //     params['CALLBACK_URL'] = 'http://localhost:8080/api/callback',
-    //     params['EMAIL'] = email,
-    //     params['MOBILE_NO'] = phone
-
-    /**
-    * Generate checksum by parameters we have
-    * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys 
-    */
     PaytmChecksum.generateSignature(JSON.stringify(paytmParams.body), config.key)
     .then(function (checksum) {
         paytmParams.head = {

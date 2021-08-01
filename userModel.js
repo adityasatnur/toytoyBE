@@ -9,6 +9,8 @@ const userSchema = mongoose.Schema({
   userKidSchool: String,
   userAddress: String,
   userPincode: Number,
+  userPurchasedItems: Object,
+  userRentedItems: Object,
   userSubscriptionEndDate: Date,
   userSubscriptionStartDate: Date,
   userPlanType: String,
