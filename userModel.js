@@ -14,6 +14,7 @@ const userSchema = mongoose.Schema({
   userSubscriptionEndDate: Date,
   userSubscriptionStartDate: Date,
   userPlanType: String,
+  credits:Number,
   ReferredBy: String
 });
 
