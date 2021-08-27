@@ -131,6 +131,29 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
     }
   });
 });
+
+
+app.post("/api/addProductsToDelivery", async (req, res, next) => {
+  const {  userId, rentedItems } = req.body;
+  const filter = { _id: userId };
+  let updateList = {
+    userRentedItems: {
+        undeliveredRentedItems:rentedItems,
+    },
+    $inc: {"credits": -1}
+
+};
+  User.findOneAndUpdate(filter, updateList, null, function (err, docs) {
+    if (err) {
+      console.log(err)
+    } else {
+        console.log("Items Added")
+        res.redirect(`${'https://toytoy.co.in'}/status`)
+
+    }
+  });
+})
+
 app.use('/api',paymentRoute);
 
 
