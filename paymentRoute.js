@@ -47,10 +47,10 @@ router.post('/callback', (req, res) => {
                 var options = {
 
                     /* for Staging */
-                    hostname: 'securegw-stage.paytm.in',
+                   // hostname: 'securegw-stage.paytm.in',
 
                     /* for Production */
-                     //hostname: 'securegw.paytm.in',
+                     hostname: 'securegw.paytm.in',
 
                     port: 443,
                     path: '/order/status',
@@ -180,8 +180,8 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-     "callbackUrl"   : `${'http://localhost:9000'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
-     //"callbackUrl"   : `${'https://toytoy.co.in'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
+     //"callbackUrl"   : `${'http://localhost:9000'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
+     "callbackUrl"   : `${'https://toytoy.co.in'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
@@ -201,10 +201,10 @@ paytmParams.body = {
         var options = {
 
             /* for Staging */
-            hostname: 'securegw-stage.paytm.in',
+            //hostname: 'securegw-stage.paytm.in',
     
             /* for Production */
-             //hostname: 'securegw.paytm.in',
+             hostname: 'securegw.paytm.in',
     
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${config.mid}&orderId=${orderID}`,
@@ -257,8 +257,8 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-     "callbackUrl"   : `${'http://localhost:9000'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
-     //"callbackUrl"   : `${'https://toytoy.co.in'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
+     //"callbackUrl"   : `${'http://localhost:9000'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
+     "callbackUrl"   : `${'https://toytoy.co.in'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
@@ -278,10 +278,10 @@ paytmParams.body = {
         var options = {
 
             /* for Staging */
-            hostname: 'securegw-stage.paytm.in',
+            //hostname: 'securegw-stage.paytm.in',
     
             /* for Production */
-             //hostname: 'securegw.paytm.in',
+             hostname: 'securegw.paytm.in',
     
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${config.mid}&orderId=${orderID}`,
@@ -352,10 +352,10 @@ router.post('/buyCreditsCallback', (req, res) => {
                 var options = {
 
                     /* for Staging */
-                    hostname: 'securegw-stage.paytm.in',
+                    //hostname: 'securegw-stage.paytm.in',
 
                     /* for Production */
-                     //hostname: 'securegw.paytm.in',
+                     hostname: 'securegw.paytm.in',
 
                     port: 443,
                     path: '/order/status',
