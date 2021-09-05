@@ -25,9 +25,9 @@
    PORT: "https://toytoylib.azurewebsites.net",
   callbackURL:function(orderID,userId,buyoutItems, rentedItems, plans ){
     return `https://toytoy.co.in/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`
-  }
+  },
   callbackURLCredits:function(orderID,userId){
-    return `https://toytoy.co.in/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
+    return `https://toytoy.co.in/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`
    }
   };
 export default config;
