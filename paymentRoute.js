@@ -6,6 +6,9 @@ import https from 'https';
 import PaytmChecksum from './Paytm/checksum.mjs';
 import config from './Paytm/config.js';
 import User from "./userModel.js";
+import Deliveries from "./deliveriesModel.js";
+import mongoose from "mongoose";
+
 
 router.post('/callback', (req, res) => {
     const orderId = req.query.orderId;
@@ -46,11 +49,8 @@ router.post('/callback', (req, res) => {
 
                 var options = {
 
-                    /* for Staging */
-                   // hostname: 'securegw-stage.paytm.in',
-
-                    /* for Production */
-                     hostname: 'securegw.paytm.in',
+                   
+                     hostname: config.hostname,
 
                     port: 443,
                     path: '/order/status',
@@ -108,6 +108,7 @@ router.post('/callback', (req, res) => {
                                 });
                             }
                             let updateList = null;
+                            let deliveryList = null;
 
                                 if(buyoutItemsList && rentedItemsList){
                                     updateList = {
@@ -119,12 +120,19 @@ router.post('/callback', (req, res) => {
                                         },
                                         $inc: {"credits": -1}
                                     };
+                                    deliveryList = {
+                                        buyoutItems:buyoutItemsList,
+                                        rentedItems: rentedItemsList 
+                                    }
                                 }else if(buyoutItemsList){
                                     updateList = {
                                         userPurchasedItems: {
                                             undeliveredPurchasedItems:buyoutItemsList,
                                         }
                                     };
+                                    deliveryList = {
+                                        buyoutItems:buyoutItemsList,
+                                    }
                                 }else if(rentedItemsList){
                                     updateList = {
                                         userRentedItems: {
@@ -133,10 +141,27 @@ router.post('/callback', (req, res) => {
                                         $inc: {"credits": -1}
 
                                     };
+                                    deliveryList = {
+                                        buyoutItems:buyoutItemsList,
+                                    }
                                 }else{
                                     updateList = undefined;
+                                    deliveryList = undefined;
                                 }
                                 
+                                if(deliveryList){
+                                    const delivery = new Deliveries({
+                                        _id: mongoose.Types.ObjectId(),
+                                        userId:userId,
+                                        items: deliveryList,
+                                        delivered: false
+                                })
+                                    delivery
+                                    .save()
+                                    .then(() => {
+                                        console.log("Delivery Chart Updated")
+                                    })
+                                }
                                 User.findOneAndUpdate(filter, updateList, null, function (err, docs) {
                                   if (err) {
                                     console.log(err)
@@ -180,8 +205,7 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-     //"callbackUrl"   : `${'http://localhost:9000'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
-     "callbackUrl"   : `${'https://toytoy.co.in'}/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`,
+     "callbackUrl"   : config.callbackURL(orderID,userId,buyoutItems, rentedItems, plans ),
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
@@ -200,12 +224,7 @@ paytmParams.body = {
         var post_data = JSON.stringify(paytmParams);
         var options = {
 
-            /* for Staging */
-            //hostname: 'securegw-stage.paytm.in',
-    
-            /* for Production */
-             hostname: 'securegw.paytm.in',
-    
+            hostname: config.hostname,
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${config.mid}&orderId=${orderID}`,
             method: 'POST',
@@ -257,8 +276,7 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-     //"callbackUrl"   : `${'http://localhost:9000'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
-     "callbackUrl"   : `${'https://toytoy.co.in'}/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`,
+     "callbackUrl"   : config.callbackURLCredits(orderID,userId),
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
@@ -277,11 +295,8 @@ paytmParams.body = {
         var post_data = JSON.stringify(paytmParams);
         var options = {
 
-            /* for Staging */
-            //hostname: 'securegw-stage.paytm.in',
-    
-            /* for Production */
-             hostname: 'securegw.paytm.in',
+            
+             hostname: config.hostname,
     
             port: 443,
             path: `/theia/api/v1/initiateTransaction?mid=${config.mid}&orderId=${orderID}`,
@@ -351,12 +366,7 @@ router.post('/buyCreditsCallback', (req, res) => {
 
                 var options = {
 
-                    /* for Staging */
-                    //hostname: 'securegw-stage.paytm.in',
-
-                    /* for Production */
-                     hostname: 'securegw.paytm.in',
-
+                    hostname: config.hostname,
                     port: 443,
                     path: '/order/status',
                     method: 'POST',

@@ -3,9 +3,8 @@ import mongoose from "mongoose";
 import Item from "./itemModel.js";
 import User from "./userModel.js";
 import cors from "cors";
-import qs from "querystring";
-import https from 'https'
 import paymentRoute from './paymentRoute.js';
+import deliveriesRoute from './deliveriesRoute.js';
 
 const connection_url =
   "mongodb+srv://Aditya:toytoy@cluster0.ra9uy.mongodb.net/toytoy";
@@ -155,6 +154,7 @@ app.post("/api/addProductsToDelivery", async (req, res, next) => {
 })
 
 app.use('/api',paymentRoute);
+app.use('/api',deliveriesRoute);
 
 
 
