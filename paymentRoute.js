@@ -276,7 +276,7 @@ paytmParams.body = {
     "mid"           : config.mid,
     "websiteName"   : config.website,
     "orderId"       : orderID,
-     "callbackUrl"   : config.callbackURLCredits(orderID,userId),
+     "callbackUrl"   : config.callbackURLCredits(orderID,userId, credits),
     "txnAmount"     : {
         "value"     : totalAmount,
         "currency"  : "INR",
