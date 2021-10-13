@@ -24,7 +24,7 @@
     hostname: 'securegw.paytm.in',
    PORT: "https://toytoylib.azurewebsites.net",
   callbackURL:function(orderID,userId,buyoutItems, rentedItems, plans ){
-    return `https://toytoy.co.in/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`
+    return `https://toytoylib.azurewebsites.net/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`
   },
   callbackURLCredits:function(orderID,userId, credits){
     return `https://toytoylib.azurewebsites.net/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`
