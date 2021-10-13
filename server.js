@@ -100,6 +100,8 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
     userSubscriptionStartDate: null,
     userPlanType: "0",
     ReferredBy: null,
+    credits: 0
+
   });
   User.findOne({ userEmail: req.body.userEmail }, function (err, obj) {
     if (obj === null) {
@@ -118,6 +120,7 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
             userSubscriptionStartDate: null,
             userPlanType: "0",
             ReferredBy: null,
+            credits: 0
           });
 
           //res.status(200).json({ user: "user added successfully" });
