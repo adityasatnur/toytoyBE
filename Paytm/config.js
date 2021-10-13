@@ -12,7 +12,7 @@
 //      callbackURLCredits:function(orderID,userId, credits){
 //       return `http://localhost:9000/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`
 //      }
-//   };
+//    };
   //PROD
   let config = {
     mid: "hOwGIE00896949538752",
@@ -27,7 +27,7 @@
     return `https://toytoy.co.in/api/callback?orderId=${orderID}&userId=${userId}&buyoutItemsId=${buyoutItems}&rentedItemsId=${rentedItems}&plansId=${plans && plans._id}`
   },
   callbackURLCredits:function(orderID,userId, credits){
-    return `https://toytoy.co.in/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`
+    return `https://toytoylib.azurewebsites.net/api/buyCreditsCallback?orderId=${orderID}&credits=${credits}&userId=${userId}`
    }
   };
 export default config;
