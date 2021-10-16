@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import Item from "./itemModel.js";
 import User from "./userModel.js";
 import cors from "cors";
-import paymentRoute from './paymentRoute.js';
-import deliveriesRoute from './deliveriesRoute.js';
+import paymentRoute from "./paymentRoute.js";
+import deliveriesRoute from "./deliveriesRoute.js";
 
 const connection_url =
   "mongodb+srv://Aditya:toytoy@cluster0.ra9uy.mongodb.net/toytoy";
@@ -37,6 +37,50 @@ app.use(express.json());
 app.get("/api/get/addItem", async (req, res) => {
   const items = await Item.find();
   res.send(items);
+});
+
+app.get("/api/get/users", async (req, res) => {
+  const items = await User.find();
+  res.send(items);
+});
+
+app.post("/api/post/deliverProduct", async (req, res, next) => {
+  const filter = { _id: req.body.id };
+  let purchased = req.body.prods[0];
+  let rented = req.body.prods[1];
+  let deliveredpurchased = req.body.prods[2];
+  let deliveredrented = req.body.prods[3];
+  
+  
+  let updateList = {
+    userPurchasedItems:{
+      undeliveredPurchasedItems: [],
+      deliveredPurchasedItems: deliveredpurchased,
+    },
+      userRentedItems:{
+        undeliveredRentedItems: [],
+        deliveredRentedItems: deliveredrented,
+
+      }
+
+  };
+  User.findOneAndUpdate(filter, updateList, {multi: true}, function (err, docs) {
+    if (err) {
+      console.log(err)
+    } else {
+        console.log("Items Added")
+         updateList = {
+          $push:{"userPurchasedItems.deliveredPurchasedItems": purchased,"userRentedItems.deliveredRentedItems": rented},
+        }
+        User.findOneAndUpdate(filter, updateList, {multi: true}, function (err, docs) {
+          if (err) {
+            console.log(err)
+          } else {
+              console.log("Items Added")
+          }
+        });
+    }
+  });
 });
 
 app.post("/api/addItem", (req, res, next) => {
@@ -100,8 +144,7 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
     userSubscriptionStartDate: null,
     userPlanType: "0",
     ReferredBy: null,
-    credits: 0
-
+    credits: 0,
   });
   User.findOne({ userEmail: req.body.userEmail }, function (err, obj) {
     if (obj === null) {
@@ -120,7 +163,7 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
             userSubscriptionStartDate: null,
             userPlanType: "0",
             ReferredBy: null,
-            credits: 0
+            credits: 0,
           });
 
           //res.status(200).json({ user: "user added successfully" });
@@ -134,33 +177,27 @@ app.post("/api/updateOrCreateUser", (req, res, next) => {
   });
 });
 
-
 app.post("/api/addProductsToDelivery", async (req, res, next) => {
-  const {  userId, rentedItems } = req.body;
+  const { userId, rentedItems } = req.body;
   const filter = { _id: userId };
   let updateList = {
     userRentedItems: {
-        undeliveredRentedItems:rentedItems,
+      undeliveredRentedItems: rentedItems,
     },
-    $inc: {"credits": -1}
-
-};
+    $inc: { credits: -1 },
+  };
   User.findOneAndUpdate(filter, updateList, null, function (err, docs) {
     if (err) {
-      console.log(err)
+      console.log(err);
     } else {
-        console.log("Items Added")
-        res.redirect(`${'https://toytoy.co.in'}/status`)
-
+      console.log("Items Added");
+      res.redirect(`${"https://toytoy.co.in"}/status`);
     }
   });
-})
+});
 
-app.use('/api',paymentRoute);
-app.use('/api',deliveriesRoute);
-
-
-
+app.use("/api", paymentRoute);
+app.use("/api", deliveriesRoute);
 
 app.get("/api", (req, res) => res.status(200).send("yo"));
 
