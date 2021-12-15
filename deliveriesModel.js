@@ -8,7 +8,6 @@ const deliveriesSchema = mongoose.Schema({
   userPincode: String,
   items: Array,
   delivered: Boolean,
-  
 });
 
 //Collection inside the database
